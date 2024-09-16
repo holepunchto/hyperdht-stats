@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/HDegroote/hyperdht-stats.git"
+    "url": "git+ssh://git@github.com/holepunchto/hyperdht-stats.git"
   },
   "keywords": [
     "hyperdht",
@@ -18,9 +18,9 @@
   "author": "Holepunch",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/HDegroote/hyperdht-stats/issues"
+    "url": "https://github.com/holepunchto/hyperdht-stats/issues"
   },
-  "homepage": "https://github.com/HDegroote/hyperdht-stats#readme",
+  "homepage": "https://github.com/holepunchto/hyperdht-stats#readme",
   "devDependencies": {
     "standard": "^17.1.2"
   },
