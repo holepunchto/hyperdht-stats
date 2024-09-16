@@ -7,39 +7,39 @@ class HyperDhtStats {
     return this.dht.stats.punches
   }
 
-  get dhtQueries () {
+  get queries () {
     return this.dht.stats.queries
   }
 
-  get dhtClientSocketBytesTransmitted () {
+  get clientSocketBytesTransmitted () {
     return this.dht.io.clientSocket?.bytesTransmitted || 0
   }
 
-  get dhtClientSocketPacketsTransmitted () {
+  get clientSocketPacketsTransmitted () {
     return this.dht.io.clientSocket?.packetsTransmitted || 0
   }
 
-  get dhtClientSocketBytesReceived () {
+  get clientSocketBytesReceived () {
     return this.dht.io.clientSocket?.bytesReceived || 0
   }
 
-  get dhtClientSocketPacketsReceived () {
+  get clientSocketPacketsReceived () {
     return this.dht.io.clientSocket?.packetsReceived || 0
   }
 
-  get dhtServerSocketBytesTransmitted () {
+  get serverSocketBytesTransmitted () {
     return this.dht.io.serverSocket?.bytesTransmitted || 0
   }
 
-  get dhtServerSocketPacketsTransmitted () {
+  get serverSocketPacketsTransmitted () {
     return this.dht.io.serverSocket?.packetsTransmitted || 0
   }
 
-  get dhtServerSocketBytesReceived () {
+  get serverSocketBytesReceived () {
     return this.dht.io.serverSocket?.bytesReceived || 0
   }
 
-  get dhtServerSocketPacketsReceived () {
+  get serverSocketPacketsReceived () {
     return this.dht.io.serverSocket?.packetsReceived || 0
   }
 
@@ -90,7 +90,7 @@ class HyperDhtStats {
       name: 'dht_active_queries',
       help: 'Number of currently active queries in the dht-rpc instance',
       collect () {
-        this.set(self.dhtQueries.active)
+        this.set(self.queries.active)
       }
     })
 
@@ -98,34 +98,34 @@ class HyperDhtStats {
       name: 'dht_total_queries',
       help: 'Total number of queries in the dht-rpc instance',
       collect () {
-        this.set(self.dhtQueries.total)
+        this.set(self.queries.total)
       }
     })
 
     new promClient.Gauge({ // eslint-disable-line no-new
       name: 'udx_total_bytes_transmitted',
-      help: 'Total bytes transmitted by the hyperswarm and the DHT',
+      help: 'Total bytes transmitted overall (by the UDX instance of the DHT)',
       collect () {
         this.set(self.udxBytesTransmitted)
       }
     })
     new promClient.Gauge({ // eslint-disable-line no-new
       name: 'udx_total_packets_transmitted',
-      help: 'Total packets transmitted by the hyperswarm and the DHT',
+      help: 'Total packets transmitted overall (by the UDX instance of the DHT)',
       collect () {
         this.set(self.udxPacketsTransmitted)
       }
     })
     new promClient.Gauge({ // eslint-disable-line no-new
       name: 'udx_total_bytes_received',
-      help: 'Total bytes received by the hyperswarm and the DHT',
+      help: 'Total bytes received overall (by the UDX instance of the DHT)',
       collect () {
         this.set(self.udxBytesReceived)
       }
     })
     new promClient.Gauge({ // eslint-disable-line no-new
       name: 'udx_total_packets_received',
-      help: 'Total packets received by the hyperswarm and the DHT',
+      help: 'Total packets received overall (by the UDX instance of the DHT)',
       collect () {
         this.set(self.udxPacketsReceived)
       }
@@ -135,28 +135,28 @@ class HyperDhtStats {
       name: 'dht_client_socket_bytes_transmitted',
       help: 'Total bytes transmitted by the client socket of the DHT',
       collect () {
-        this.set(self.dhtClientSocketBytesTransmitted)
+        this.set(self.clientSocketBytesTransmitted)
       }
     })
     new promClient.Gauge({ // eslint-disable-line no-new
       name: 'dht_client_socket_packets_transmitted',
       help: 'Total packets transmitted by the client socket of the DHT',
       collect () {
-        this.set(self.dhtClientSocketPacketsTransmitted)
+        this.set(self.clientSocketPacketsTransmitted)
       }
     })
     new promClient.Gauge({ // eslint-disable-line no-new
       name: 'dht_client_socket_bytes_received',
       help: 'Total bytes received by the client socket of the DHT',
       collect () {
-        this.set(self.dhtClientSocketBytesReceived)
+        this.set(self.clientSocketBytesReceived)
       }
     })
     new promClient.Gauge({ // eslint-disable-line no-new
       name: 'dht_client_socket_packets_received',
       help: 'Total packets received by the client socket of the DHT',
       collect () {
-        this.set(self.dhtClientSocketPacketsReceived)
+        this.set(self.clientSocketPacketsReceived)
       }
     })
 
@@ -164,28 +164,28 @@ class HyperDhtStats {
       name: 'dht_server_socket_bytes_transmitted',
       help: 'Total bytes transmitted by the server socket of the DHT',
       collect () {
-        this.set(self.dhtServerSocketBytesTransmitted)
+        this.set(self.serverSocketBytesTransmitted)
       }
     })
     new promClient.Gauge({ // eslint-disable-line no-new
       name: 'dht_server_socket_packets_transmitted',
       help: 'Total packets transmitted by the server socket of the DHT',
       collect () {
-        this.set(self.dhtServerSocketPacketsTransmitted)
+        this.set(self.serverSocketPacketsTransmitted)
       }
     })
     new promClient.Gauge({ // eslint-disable-line no-new
       name: 'dht_server_socket_bytes_received',
       help: 'Total bytes received by the server socket of the DHT',
       collect () {
-        this.set(self.dhtServerSocketBytesReceived)
+        this.set(self.serverSocketBytesReceived)
       }
     })
     new promClient.Gauge({ // eslint-disable-line no-new
       name: 'dht_server_socket_packets_received',
       help: 'Total packets received by the server socket of the DHT',
       collect () {
-        this.set(self.dhtServerSocketPacketsReceived)
+        this.set(self.serverSocketPacketsReceived)
       }
     })
   }

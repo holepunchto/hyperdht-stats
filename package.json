@@ -4,7 +4,7 @@
   "description": "HyperDHT stats, with Prometheus support",
   "main": "index.js",
   "scripts": {
-    "test": "standard"
+    "test": "standard && brittle test.js"
   },
   "repository": {
     "type": "git",
@@ -22,6 +22,9 @@
   },
   "homepage": "https://github.com/holepunchto/hyperdht-stats#readme",
   "devDependencies": {
+    "brittle": "^3.7.0",
+    "hyperdht": "^6.16.5",
+    "prom-client": "^15.1.3",
     "standard": "^17.1.2"
   },
   "files": [
