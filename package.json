@@ -1,0 +1,24 @@
+{
+  "name": "hyperdht-stats",
+  "version": "0.0.0",
+  "description": "HyperDHT stats, with Prometheus support",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/HDegroote/hyperdht-stats.git"
+  },
+  "keywords": [
+    "hyperdht",
+    "prometheus",
+    "stats"
+  ],
+  "author": "Holepunch",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/HDegroote/hyperdht-stats/issues"
+  },
+  "homepage": "https://github.com/HDegroote/hyperdht-stats#readme"
+}
