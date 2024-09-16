@@ -4,59 +4,59 @@ class HyperDhtStats {
   }
 
   get punches () {
-    return this.swarm.dht.stats.punches
+    return this.dht.stats.punches
   }
 
   get dhtQueries () {
-    return this.swarm.dht.stats.queries
+    return this.dht.stats.queries
   }
 
   get dhtClientSocketBytesTransmitted () {
-    return this.swarm.dht.io.clientSocket?.bytesTransmitted || 0
+    return this.dht.io.clientSocket?.bytesTransmitted || 0
   }
 
   get dhtClientSocketPacketsTransmitted () {
-    return this.swarm.dht.io.clientSocket?.packetsTransmitted || 0
+    return this.dht.io.clientSocket?.packetsTransmitted || 0
   }
 
   get dhtClientSocketBytesReceived () {
-    return this.swarm.dht.io.clientSocket?.bytesReceived || 0
+    return this.dht.io.clientSocket?.bytesReceived || 0
   }
 
   get dhtClientSocketPacketsReceived () {
-    return this.swarm.dht.io.clientSocket?.packetsReceived || 0
+    return this.dht.io.clientSocket?.packetsReceived || 0
   }
 
   get dhtServerSocketBytesTransmitted () {
-    return this.swarm.dht.io.serverSocket?.bytesTransmitted || 0
+    return this.dht.io.serverSocket?.bytesTransmitted || 0
   }
 
   get dhtServerSocketPacketsTransmitted () {
-    return this.swarm.dht.io.serverSocket?.packetsTransmitted || 0
+    return this.dht.io.serverSocket?.packetsTransmitted || 0
   }
 
   get dhtServerSocketBytesReceived () {
-    return this.swarm.dht.io.serverSocket?.bytesReceived || 0
+    return this.dht.io.serverSocket?.bytesReceived || 0
   }
 
   get dhtServerSocketPacketsReceived () {
-    return this.swarm.dht.io.serverSocket?.packetsReceived || 0
+    return this.dht.io.serverSocket?.packetsReceived || 0
   }
 
   get udxBytesTransmitted () {
-    return this.swarm.dht.udx.bytesTransmitted
+    return this.dht.udx.bytesTransmitted
   }
 
   get udxPacketsTransmitted () {
-    return this.swarm.dht.udx.packetsTransmitted
+    return this.dht.udx.packetsTransmitted
   }
 
   get udxBytesReceived () {
-    return this.swarm.dht.udx.bytesReceived
+    return this.dht.udx.bytesReceived
   }
 
   get udxPacketsReceived () {
-    return this.swarm.dht.udx.packetsReceived
+    return this.dht.udx.packetsReceived
   }
 
   // TODO
