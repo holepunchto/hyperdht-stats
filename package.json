@@ -4,7 +4,7 @@
   "description": "HyperDHT stats, with Prometheus support",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "standard"
   },
   "repository": {
     "type": "git",
@@ -20,5 +20,11 @@
   "bugs": {
     "url": "https://github.com/HDegroote/hyperdht-stats/issues"
   },
-  "homepage": "https://github.com/HDegroote/hyperdht-stats#readme"
+  "homepage": "https://github.com/HDegroote/hyperdht-stats#readme",
+  "devDependencies": {
+    "standard": "^17.1.2"
+  },
+  "files": [
+    "index.js"
+  ]
 }
