@@ -223,8 +223,8 @@ class HyperDhtStats {
       }
     })
 
-    // Only if the DHT is persistent (returns 0 values it it is
-    // persistent for a while but then no longer)
+    // Only if the DHT is persistent (returns 0 values if it was
+    // persistent for a while but now no longer)
     self.dht.once('persistent', () => {
       new promClient.Gauge({ // eslint-disable-line no-new
         name: 'dht_nr_records',
