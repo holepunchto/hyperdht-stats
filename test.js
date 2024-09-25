@@ -44,12 +44,21 @@ test(async (t) => {
     t.is(getMetricValue(lines, 'dht_server_socket_packets_transmitted'), 0, 'dht_server_socket_packets_transmitted')
     t.is(getMetricValue(lines, 'dht_server_socket_bytes_received'), 0, 'dht_server_socket_bytes_received')
     t.is(getMetricValue(lines, 'dht_server_socket_packets_received'), 0, 'dht_server_socket_packets_received')
+    t.is(getMetricValue(lines, 'dht_nr_nodes'), 0, 'dht_nr_nodes received')
+    t.is(getMetricValue(lines, 'dht_nr_unique_node_ips'), 0, 'dht_nr_unique_node_ips')
+
+    // Flow where it is persistent is a bit harder to test,
+    // so that path is untested for now
+    t.is(getMetricValue(lines, 'dht_nr_records', { errOnNoMatch: false }), null, 'dht_nr_records not exported when not persistent')
   }
 })
 
-function getMetricValue (lines, name) {
+function getMetricValue (lines, name, { errOnNoMatch = true } = {}) {
   const match = lines.find((l) => l.startsWith(`${name} `))
-  if (!match) throw new Error(`No match for ${name}`)
+  if (!match) {
+    if (errOnNoMatch) throw new Error(`No match for ${name}`)
+    return null
+  }
 
   const value = parseInt(match.split(' ')[1])
   if (DEBUG) console.log(name, '->', value)
