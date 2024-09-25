@@ -59,8 +59,26 @@ class HyperDhtStats {
     return this.dht.udx.packetsReceived
   }
 
-  // TODO
-  // get nrDhtEntries () {}
+  get nrNodes () {
+    return this.dht.nodes.length
+  }
+
+  // Linear I.F.O. nodes length (could be constant by
+  // listening to dht-rpc's node-added and node-removed events
+  // and managing the state here)
+  get nrUniqueNodeIPs () {
+    const ips = new Set()
+    for (const node of this.dht.nodes.toArray()) {
+      ips.add(node.host)
+    }
+    return ips.size
+  }
+
+  get nrRecords () {
+    // TODO: use a public API
+    return this.dht._persistent?.records.size || null
+  }
+  // TODO: nrMutables, nrImmutables
 
   registerPrometheusMetrics (promClient) {
     const self = this
@@ -187,6 +205,34 @@ class HyperDhtStats {
       collect () {
         this.set(self.serverSocketPacketsReceived)
       }
+    })
+
+    new promClient.Gauge({ // eslint-disable-line no-new
+      name: 'dht_nr_nodes',
+      help: 'Total nodes in the Kademlia DHT table of this node',
+      collect () {
+        this.set(self.nrNodes)
+      }
+    })
+
+    new promClient.Gauge({ // eslint-disable-line no-new
+      name: 'dht_nr_unique_node_ips',
+      help: 'Total unique ip addresses in the Kademlia DHT table of this node',
+      collect () {
+        this.set(self.nrUniqueNodeIPs)
+      }
+    })
+
+    // Only if the DHT is persistent (returns 0 values it it is
+    // persistent for a while but then no longer)
+    self.dht.once('persistent', () => {
+      new promClient.Gauge({ // eslint-disable-line no-new
+        name: 'dht_nr_records',
+        help: 'Total nr of records stored by this (persistent) node',
+        collect () {
+          this.set(self.nrRecords || 0)
+        }
+      })
     })
   }
 }
