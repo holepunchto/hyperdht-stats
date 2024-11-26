@@ -67,6 +67,12 @@ class HyperDhtStats {
     return this.dht.nodes.length
   }
 
+  getRemoteAddress () {
+    const address = this.dht.remoteAddress()
+    if (!address) return null
+    return `${address.host}:${address.port}`
+  }
+
   // Linear I.F.O. nodes length (could be constant by
   // listening to dht-rpc's node-added and node-removed events
   // and managing the state here)
@@ -232,6 +238,17 @@ class HyperDhtStats {
       help: 'Whether the DHT server thinks it is behind a firewall (1) or not (0)',
       collect () {
         this.set(self.isFirewalled ? 1 : 0)
+      }
+    })
+
+    new promClient.Gauge({ // eslint-disable-line no-new
+      // Gauges expect a number, so we set the address as label instead
+      name: 'dht_remote_address',
+      help: 'The remote address of the DHT (set only if not firewalled)',
+      labelNames: ['address'],
+      collect () {
+        const address = self.getRemoteAddress()
+        if (address) this.labels(address).set(1)
       }
     })
 

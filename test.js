@@ -52,6 +52,18 @@ test(async (t) => {
     // so that path is untested for now
     t.is(getMetricValue(lines, 'dht_nr_records', { errOnNoMatch: false }), null, 'dht_nr_records not exported when not persistent')
   }
+
+  await dht.fullyBootstrapped()
+
+  {
+    const { host, port } = dht.remoteAddress()
+    const remoteAddress = `${host}:${port}`
+
+    const metrics = await promClient.register.metrics()
+    const lines = metrics.split('\n')
+    const nameWithLabel = `dht_remote_address{address="${remoteAddress}"}`
+    t.is(getMetricValue(lines, nameWithLabel), 1, 'Returns correct remote address when available')
+  }
 })
 
 function getMetricValue (lines, name, { errOnNoMatch = true } = {}) {
