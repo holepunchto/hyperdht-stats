@@ -3,6 +3,10 @@ class HyperDhtStats {
     this.dht = dht
   }
 
+  get isFirewalled () {
+    return this.dht.firewalled
+  }
+
   get punches () {
     return this.dht.stats.punches
   }
@@ -220,6 +224,14 @@ class HyperDhtStats {
       help: 'Total unique ip addresses in the Kademlia DHT table of this node',
       collect () {
         this.set(self.nrUniqueNodeIPs)
+      }
+    })
+
+    new promClient.Gauge({ // eslint-disable-line no-new
+      name: 'dht_is_firewalled',
+      help: 'Whether the DHT server thinks it is behind a firewall (1) or not (0)',
+      collect () {
+        this.set(self.isFirewalled ? 1 : 0)
       }
     })
 

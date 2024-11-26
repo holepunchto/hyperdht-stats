@@ -10,7 +10,7 @@ test(async (t) => {
   const testnet = await createTestnet()
   const bootstrap = testnet.bootstrap
 
-  const dht = new Hyperdht({ bootstrap })
+  const dht = new Hyperdht({ bootstrap, firewalled: false })
 
   t.teardown(async () => {
     await dht.destroy()
@@ -46,6 +46,7 @@ test(async (t) => {
     t.is(getMetricValue(lines, 'dht_server_socket_packets_received'), 0, 'dht_server_socket_packets_received')
     t.is(getMetricValue(lines, 'dht_nr_nodes'), 0, 'dht_nr_nodes received')
     t.is(getMetricValue(lines, 'dht_nr_unique_node_ips'), 0, 'dht_nr_unique_node_ips')
+    t.is(getMetricValue(lines, 'dht_is_firewalled'), 0, 'dht_is_firewalled')
 
     // Flow where it is persistent is a bit harder to test,
     // so that path is untested for now
