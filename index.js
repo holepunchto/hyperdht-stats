@@ -68,9 +68,9 @@ class HyperDhtStats {
   }
 
   getRemoteAddress () {
-    const address = this.dht.remoteAddress()
-    if (!address) return null
-    return `${address.host}:${address.port}`
+    if (!this.dht.host || !this.dht.port) return
+    const address = `${this.dht.host}:${this.dht.port}`
+    return address
   }
 
   // Linear I.F.O. nodes length (could be constant by
