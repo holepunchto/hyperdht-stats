@@ -63,6 +63,10 @@ class HyperDhtStats {
     return this.dht.udx.packetsReceived
   }
 
+  get udxPacketsDropped () {
+    return this.dht.udx.packetsDropped == null ? null : this.dht.udx.packetsDropped
+  }
+
   get nrNodes () {
     return this.dht.nodes.length
   }
@@ -156,6 +160,13 @@ class HyperDhtStats {
       help: 'Total packets received overall (by the UDX instance of the DHT)',
       collect () {
         this.set(self.udxPacketsReceived)
+      }
+    })
+    new promClient.Gauge({ // eslint-disable-line no-new
+      name: 'udx_packets_dropped_total',
+      help: 'Total packets dropped (by the UDX instance of the DHT). Only defined on Linux.',
+      collect () {
+        if (self.udxPacketsDropped !== null) this.set(self.udxPacketsDropped)
       }
     })
 

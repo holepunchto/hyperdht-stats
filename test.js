@@ -36,6 +36,7 @@ test(async (t) => {
     t.is(getMetricValue(lines, 'udx_total_packets_transmitted'), 0, 'udx_total_packets_transmitted')
     t.is(getMetricValue(lines, 'udx_total_bytes_received'), 0, 'udx_total_bytes_received')
     t.is(getMetricValue(lines, 'udx_total_packets_received'), 0, 'udx_total_packets_received')
+    t.is(getMetricValue(lines, 'udx_packets_dropped_total'), 0, 'udx_packets_dropped_total') // Note: only true for Linux, this stat is not defined on mac/windows
     t.is(getMetricValue(lines, 'dht_client_socket_bytes_transmitted'), 0, 'dht_client_socket_bytes_transmitted')
     t.is(getMetricValue(lines, 'dht_client_socket_packets_transmitted'), 0, 'dht_client_socket_packets_transmitted')
     t.is(getMetricValue(lines, 'dht_client_socket_bytes_received'), 0, 'dht_client_socket_bytes_received')
