@@ -48,6 +48,14 @@ test(async (t) => {
     t.is(getMetricValue(lines, 'dht_nr_nodes'), 0, 'dht_nr_nodes received')
     t.is(getMetricValue(lines, 'dht_nr_unique_node_ips'), 0, 'dht_nr_unique_node_ips')
     t.is(getMetricValue(lines, 'dht_is_firewalled'), 0, 'dht_is_firewalled')
+    t.is(getMetricValue(lines, 'dht_ping_received'), 0, 'dht_ping_received')
+    t.is(getMetricValue(lines, 'dht_ping_transmitted'), 0, 'dht_ping_transmitted')
+    t.is(getMetricValue(lines, 'dht_ping_nat_received'), 0, 'dht_ping_nat_received')
+    t.is(getMetricValue(lines, 'dht_ping_nat_transmitted'), 0, 'dht_ping_nat_transmitted')
+    t.is(getMetricValue(lines, 'dht_find_node_received'), 0, 'dht_find_node_received')
+    t.is(getMetricValue(lines, 'dht_find_node_transmitted'), 0, 'dht_find_node_transmitted')
+    t.is(getMetricValue(lines, 'dht_down_hint_received'), 0, 'dht_down_hint_received')
+    t.is(getMetricValue(lines, 'dht_down_hint_transmitted'), 0, 'dht_down_hint_transmitted')
 
     // Flow where it is persistent is a bit harder to test,
     // so that path is untested for now
