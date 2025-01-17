@@ -15,6 +15,22 @@ class HyperDhtStats {
     return this.dht.stats.queries
   }
 
+  get pingCmds () {
+    return this.dht.stats.commands.ping
+  }
+
+  get pingNatCmds () {
+    return this.dht.stats.commands.pingNat
+  }
+
+  get downHintCmds () {
+    return this.dht.stats.commands.downHint
+  }
+
+  get findNodeCmds () {
+    return this.dht.stats.commands.findNode
+  }
+
   get clientSocketBytesTransmitted () {
     return this.dht.io.clientSocket?.bytesTransmitted || 0
   }
@@ -133,6 +149,70 @@ class HyperDhtStats {
       help: 'Total number of queries in the dht-rpc instance',
       collect () {
         this.set(self.queries.total)
+      }
+    })
+
+    new promClient.Gauge({ // eslint-disable-line no-new
+      name: 'dht_ping_received',
+      help: 'Total number of PING commands received',
+      collect () {
+        this.set(self.pingCmds.rx)
+      }
+    })
+
+    new promClient.Gauge({ // eslint-disable-line no-new
+      name: 'dht_ping_transmitted',
+      help: 'Total number of PING commands transmitted',
+      collect () {
+        this.set(self.pingCmds.tx)
+      }
+    })
+
+    new promClient.Gauge({ // eslint-disable-line no-new
+      name: 'dht_ping_nat_received',
+      help: 'Total number of PING_NAT commands received',
+      collect () {
+        this.set(self.pingNatCmds.rx)
+      }
+    })
+
+    new promClient.Gauge({ // eslint-disable-line no-new
+      name: 'dht_ping_nat_transmitted',
+      help: 'Total number of PING_NAT commands transmitted',
+      collect () {
+        this.set(self.pingNatCmds.tx)
+      }
+    })
+
+    new promClient.Gauge({ // eslint-disable-line no-new
+      name: 'dht_find_node_received',
+      help: 'Total number of FIND_NODE commands received',
+      collect () {
+        this.set(self.findNodeCmds.rx)
+      }
+    })
+
+    new promClient.Gauge({ // eslint-disable-line no-new
+      name: 'dht_find_node_transmitted',
+      help: 'Total number of FIND_NODE commands transmitted',
+      collect () {
+        this.set(self.findNodeCmds.tx)
+      }
+    })
+
+    new promClient.Gauge({ // eslint-disable-line no-new
+      name: 'dht_down_hint_received',
+      help: 'Total number of DOWN_HINT commands received',
+      collect () {
+        this.set(self.downHintCmds.rx)
+      }
+    })
+
+    new promClient.Gauge({ // eslint-disable-line no-new
+      name: 'dht_down_hint_transmitted',
+      help: 'Total number of DOWN_HINT commands transmitted',
+      collect () {
+        this.set(self.downHintCmds.tx)
       }
     })
 
