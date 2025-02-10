@@ -59,6 +59,60 @@ class HyperDhtStats {
     return this.dht.io.serverSocket?.bytesReceived || 0
   }
 
+
+  summary () {
+    const {
+      firewalled,
+      punches,
+      queries,
+      pingCmds,
+      pingNatCmds,
+      downHintCmds,
+      findNodeCmds,
+      clientSocketBytesTransmitted,
+      clientSocketPacketsTransmitted,
+      clientSocketBytesReceived,
+      serverSocketPacketsTransmitted,
+      serverSocketBytesTransmitted,
+      serverSocketPacketsReceived,
+      serverSocketBytesReceived,
+      udxBytesTransmitted,
+      udxPacketsTransmitted,
+      udxBytesReceived,
+      udxPacketsReceived,
+      udxPacketsDropped,
+      nrNodes,
+      nrUniqueNodeIPs,
+      nrRecords
+    } = this
+
+    return {
+      firewalled,
+      punches,
+      queries,
+      pingCmds,
+      pingNatCmds,
+      downHintCmds,
+      findNodeCmds,
+      clientSocketBytesTransmitted,
+      clientSocketPacketsTransmitted,
+      clientSocketBytesReceived,
+      serverSocketPacketsTransmitted,
+      serverSocketBytesTransmitted,
+      serverSocketPacketsReceived,
+      serverSocketBytesReceived,
+      udxBytesTransmitted,
+      udxPacketsTransmitted,
+      udxBytesReceived,
+      udxPacketsReceived,
+      udxPacketsDropped,
+      nrNodes,
+      remoteAddress: this.getRemoteAddress(),
+      nrUniqueNodeIPs,
+      nrRecords
+    }
+  }
+
   get serverSocketPacketsReceived () {
     return this.dht.io.serverSocket?.packetsReceived || 0
   }
