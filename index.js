@@ -112,6 +112,43 @@ class HyperDhtStats {
   }
   // TODO: nrMutables, nrImmutables
 
+  toString () {
+    // Note: we do not include our remote address in the toString
+    // because then sharing these stats could leak the IP
+    return `DHT Stats
+  - dht_is_firewalled: ${this.isFirewalled}
+  - dht_client_socket_bytes_transmitted: ${this.clientSocketBytesTransmitted}
+  - dht_client_socket_packets_transmitted: ${this.clientSocketPacketsTransmitted}
+  - dht_client_socket_bytes_received: ${this.clientSocketBytesReceived}
+  - dht_client_socket_packets_received: ${this.clientSocketPacketsReceived}
+  - dht_server_socket_bytes_transmitted: ${this.serverSocketBytesTransmitted}
+  - dht_server_socket_packets_transmitted: ${this.serverSocketPacketsTransmitted}
+  - dht_server_socket_bytes_received: ${this.serverSocketBytesReceived}
+  - dht_server_socket_packets_received: ${this.serverSocketPacketsReceived}
+  - dht_nr_nodes: ${this.nrNodes}
+  - dht_nr_unique_node_ips: ${this.nrUniqueNodeIPs}
+  - dht_nr_records: ${this.nrRecords || 0}
+  - dht_consistent_punches: ${this.punches.consistent}
+  - dht_random_punches: ${this.punches.random}
+  - dht_open_punches: ${this.punches.open}
+  - dht_active_queries: ${this.queries.active}
+  - dht_total_queries: ${this.queries.total}
+  - dht_ping_received: ${this.pingCmds.rx}
+  - dht_ping_transmitted: ${this.pingCmds.tx}
+  - dht_ping_nat_received: ${this.pingNatCmds.rx}
+  - dht_ping_nat_transmitted: ${this.pingNatCmds.tx}
+  - dht_find_node_received: ${this.findNodeCmds.rx}
+  - dht_find_node_transmitted: ${this.findNodeCmds.tx}
+  - dht_down_hint_received: ${this.downHintCmds.rx}
+  - dht_down_hint_transmitted: ${this.downHintCmds.tx}
+UDX Stats
+  - udx_total_bytes_transmitted: ${this.udxBytesTransmitted}
+  - udx_total_packets_transmitted: ${this.udxPacketsTransmitted}
+  - udx_total_bytes_received: ${this.udxBytesReceived}
+  - udx_total_packets_received: ${this.udxPacketsReceived}
+  - udx_packets_dropped_total: ${this.udxPacketsDropped}`
+  }
+
   registerPrometheusMetrics (promClient) {
     const self = this
     new promClient.Gauge({ // eslint-disable-line no-new
