@@ -6,7 +6,7 @@ const HyperDhtStats = require('.')
 
 const DEBUG = true
 
-test(async (t) => {
+test('Prometheus metrics', async (t) => {
   const testnet = await createTestnet()
   const bootstrap = testnet.bootstrap
 
@@ -73,6 +73,23 @@ test(async (t) => {
     const nameWithLabel = `dht_remote_address{address="${remoteAddress}"}`
     t.is(getMetricValue(lines, nameWithLabel), 1, 'Returns correct remote address when available')
   }
+})
+
+test('toString', async t => {
+  const testnet = await createTestnet()
+  const bootstrap = testnet.bootstrap
+
+  const dht = new Hyperdht({ bootstrap, firewalled: false })
+
+  t.teardown(async () => {
+    await dht.destroy()
+    await testnet.destroy()
+  })
+
+  const stats = new HyperDhtStats(dht)
+  const str = stats.toString()
+  t.ok(str.includes('UDX Stats', 'toString includes udx stats'))
+  t.ok(str.includes('DHT Stats', 'toString includes DHT stats'))
 })
 
 function getMetricValue (lines, name, { errOnNoMatch = true } = {}) {

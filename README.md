@@ -27,3 +27,7 @@ stats.registerPrometheusMetrics(promClient)
 const metrics = await promClient.register.metrics()
 console.log(metrics)
 ```
+
+## Usage Without Prometheus
+
+`dhtStats.toString()` returns a string overview of all stats.
