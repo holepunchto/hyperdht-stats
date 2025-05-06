@@ -95,6 +95,12 @@ class HyperDhtStats {
     return address
   }
 
+  getLocalAddress () {
+    const address = this.dht.localAddress()
+    if (!address) return null
+    return `${address.host}:${address.port}`
+  }
+
   // Linear I.F.O. nodes length (could be constant by
   // listening to dht-rpc's node-added and node-removed events
   // and managing the state here)
@@ -378,6 +384,17 @@ UDX Stats
       labelNames: ['address'],
       collect () {
         const address = self.getRemoteAddress()
+        if (address) this.labels(address).set(1)
+      }
+    })
+
+    new promClient.Gauge({ // eslint-disable-line no-new
+      // Gauges expect a number, so we set the address as label instead
+      name: 'dht_local_address',
+      help: 'The local address of the DHT (set only if not firewalled)',
+      labelNames: ['address'],
+      collect () {
+        const address = self.getLocalAddress()
         if (address) this.labels(address).set(1)
       }
     })
