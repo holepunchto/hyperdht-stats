@@ -90,9 +90,11 @@ class HyperDhtStats {
   }
 
   getRemoteAddress () {
-    if (!this.dht.host || !this.dht.port) return
-    const address = `${this.dht.host}:${this.dht.port}`
-    return address
+    const address = this.dht.firewalled
+      ? { host: this.dht.host, port: this.dht.port }
+      : this.dht.remoteAddress()
+    if (!address?.port) return null
+    return `${address.host}:${address.port}`
   }
 
   getLocalAddress () {
