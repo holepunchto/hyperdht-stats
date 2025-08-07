@@ -11,14 +11,14 @@ test('Prometheus metrics', async (t) => {
   const bootstrap = testnet.bootstrap
 
   const dht = new Hyperdht({ bootstrap, firewalled: false })
+  const stats = new HyperDhtStats(dht)
+  stats.registerPrometheusMetrics(promClient)
 
   t.teardown(async () => {
+    promClient.register.clear()
     await dht.destroy()
     await testnet.destroy()
   })
-
-  const stats = new HyperDhtStats(dht)
-  stats.registerPrometheusMetrics(promClient)
 
   {
     const metrics = await promClient.register.metrics()
@@ -90,6 +90,37 @@ test('toString', async t => {
   const str = stats.toString()
   t.ok(str.includes('UDX Stats', 'toString includes udx stats'))
   t.ok(str.includes('DHT Stats', 'toString includes DHT stats'))
+})
+
+test('toJson', async t => {
+  const testnet = await createTestnet()
+  const bootstrap = testnet.bootstrap
+
+  const dht = new Hyperdht({ bootstrap, firewalled: false })
+  const stats = new HyperDhtStats(dht)
+  stats.registerPrometheusMetrics(promClient)
+
+  t.teardown(async () => {
+    promClient.register.clear()
+    await dht.destroy()
+    await testnet.destroy()
+  })
+
+  const nrStrStats = stats.toString().split('\n').length - 2 // 2 headers, all other lines are stats
+  const nrPromStats = (await promClient.register.metrics()).split('\n\n').length
+
+  const jsonStats = stats.toJson()
+  let nrJsonStats = 0
+  for (const value of Object.values(jsonStats)) {
+    // Some stats are nested for JSON, so we want to count all the nested stats
+    nrJsonStats += value !== null && typeof value === 'object'
+      ? [...Object.keys(value)].length
+      : 1
+  }
+
+  t.is(nrStrStats, 32, 'expected nr of stats')
+  t.is(nrJsonStats, nrStrStats)
+  t.is(nrPromStats + 1, nrStrStats) // dht_nr_records not set since not yet persisted
 })
 
 function getMetricValue (lines, name, { errOnNoMatch = true } = {}) {
