@@ -120,10 +120,42 @@ class HyperDhtStats {
   }
   // TODO: nrMutables, nrImmutables
 
+  toJson () {
+    return {
+      isFirewalled: this.isFirewalled,
+      localAddress: this.getLocalAddress(),
+      remoteAddress: this.getRemoteAddress(),
+      clientSocketBytesTransmitted: this.clientSocketBytesTransmitted,
+      clientSocketPacketsTransmitted: this.clientSocketPacketsTransmitted,
+      clientSocketBytesReceived: this.clientSocketBytesReceived,
+      clientSocketPacketsReceived: this.clientSocketPacketsReceived,
+      serverSocketBytesTransmitted: this.serverSocketBytesTransmitted,
+      serverSocketPacketsTransmitted: this.serverSocketPacketsTransmitted,
+      serverSocketBytesReceived: this.serverSocketBytesReceived,
+      serverSocketPacketsReceived: this.serverSocketPacketsReceived,
+      nrNodes: this.nrNodes,
+      nrUniqueNodeIPs: this.nrUniqueNodeIPs,
+      nrRecords: this.nrRecords || 0,
+      punches: { ...this.punches },
+      queries: { ...this.queries },
+      pingCmds: { ...this.pingCmds },
+      pingNatCmds: { ...this.pingNatCmds },
+      findNodeCmds: { ...this.findNodeCmds },
+      downHintCmds: { ...this.downHintCmds },
+      udxBytesTransmitted: this.udxBytesTransmitted,
+      udxPacketsTransmitted: this.udxPacketsTransmitted,
+      udxBytesReceived: this.udxBytesReceived,
+      udxPacketsReceived: this.udxPacketsReceived,
+      udxPacketsDropped: this.udxPacketsDropped
+    }
+  }
+
   toString () {
     // Note: we do not include our remote address in the toString
     // because then sharing these stats could leak the IP
     return `DHT Stats
+  - dht_remote_address: ${this.getRemoteAddress()}
+  - dht_local_address: ${this.getLocalAddress()}
   - dht_is_firewalled: ${this.isFirewalled}
   - dht_client_socket_bytes_transmitted: ${this.clientSocketBytesTransmitted}
   - dht_client_socket_packets_transmitted: ${this.clientSocketPacketsTransmitted}

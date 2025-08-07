@@ -31,3 +31,5 @@ console.log(metrics)
 ## Usage Without Prometheus
 
 `dhtStats.toString()` returns a string overview of all stats.
+
+`dhtStats.toJson()` returns a JSON overview of all stats.
