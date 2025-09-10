@@ -47,6 +47,21 @@ class HyperDhtStats {
     return this.dht.io.clientSocket?.packetsReceived || 0
   }
 
+  get clientSocketStreams () {
+    return this.dht.io.clientSocket?.streams.size || 0
+  }
+
+  get clientSocketPendingWrites () {
+    if (!this.dht.io.clientSocket?.streams) return 0
+
+    let res = 0
+    for (const s of this.dht.io.clientSocket.streams) {
+      res += s._wreqs.length - s._wfree.length
+    }
+
+    return res
+  }
+
   get serverSocketBytesTransmitted () {
     return this.dht.io.serverSocket?.bytesTransmitted || 0
   }
@@ -61,6 +76,21 @@ class HyperDhtStats {
 
   get serverSocketPacketsReceived () {
     return this.dht.io.serverSocket?.packetsReceived || 0
+  }
+
+  get serverSocketStreams () {
+    return this.dht.io.serverSocket?.streams.size || 0
+  }
+
+  get serverSocketPendingWrites () {
+    if (!this.dht.io.serverSocket?.streams) return 0
+
+    let res = 0
+    for (const s of this.dht.io.serverSocket.streams) {
+      res += s._wreqs.length - s._wfree.length
+    }
+
+    return res
   }
 
   get udxBytesTransmitted () {
@@ -129,10 +159,14 @@ class HyperDhtStats {
       clientSocketPacketsTransmitted: this.clientSocketPacketsTransmitted,
       clientSocketBytesReceived: this.clientSocketBytesReceived,
       clientSocketPacketsReceived: this.clientSocketPacketsReceived,
+      clientSocketStreams: this.clientSocketStreams,
+      clientSocketPendingWrites: this.clientSocketPendingWrites,
       serverSocketBytesTransmitted: this.serverSocketBytesTransmitted,
       serverSocketPacketsTransmitted: this.serverSocketPacketsTransmitted,
       serverSocketBytesReceived: this.serverSocketBytesReceived,
       serverSocketPacketsReceived: this.serverSocketPacketsReceived,
+      serverSocketStreams: this.serverSocketStreams,
+      serverSocketPendingWrites: this.serverSocketPendingWrites,
       nrNodes: this.nrNodes,
       nrUniqueNodeIPs: this.nrUniqueNodeIPs,
       nrRecords: this.nrRecords || 0,
@@ -161,10 +195,14 @@ class HyperDhtStats {
   - dht_client_socket_packets_transmitted: ${this.clientSocketPacketsTransmitted}
   - dht_client_socket_bytes_received: ${this.clientSocketBytesReceived}
   - dht_client_socket_packets_received: ${this.clientSocketPacketsReceived}
+  - dht_client_socket_streams: ${this.clientSocketStreams}
+  - dht_client_socket_pending_writes: ${this.clientSocketPendingWrites}
   - dht_server_socket_bytes_transmitted: ${this.serverSocketBytesTransmitted}
   - dht_server_socket_packets_transmitted: ${this.serverSocketPacketsTransmitted}
   - dht_server_socket_bytes_received: ${this.serverSocketBytesReceived}
   - dht_server_socket_packets_received: ${this.serverSocketPacketsReceived}
+  - dht_server_socket_streams: ${this.serverSocketStreams}
+  - dht_server_socket_pending_writes: ${this.serverSocketPendingWrites}
   - dht_nr_nodes: ${this.nrNodes}
   - dht_nr_unique_node_ips: ${this.nrUniqueNodeIPs}
   - dht_nr_records: ${this.nrRecords || 0}
@@ -357,6 +395,20 @@ UDX Stats
         this.set(self.clientSocketPacketsReceived)
       }
     })
+    new promClient.Gauge({ // eslint-disable-line no-new
+      name: 'dht_client_socket_streams',
+      help: 'Total open streams on the client socket',
+      collect () {
+        this.set(self.clientSocketStreams)
+      }
+    })
+    new promClient.Gauge({ // eslint-disable-line no-new
+      name: 'dht_client_socket_pending_writes',
+      help: 'Total writes pending on the streams of the client socket',
+      collect () {
+        this.set(self.clientSocketPendingWrites)
+      }
+    })
 
     new promClient.Gauge({ // eslint-disable-line no-new
       name: 'dht_server_socket_bytes_transmitted',
@@ -384,6 +436,20 @@ UDX Stats
       help: 'Total packets received by the server socket of the DHT',
       collect () {
         this.set(self.serverSocketPacketsReceived)
+      }
+    })
+    new promClient.Gauge({ // eslint-disable-line no-new
+      name: 'dht_server_socket_streams',
+      help: 'Total open streams on the server socket',
+      collect () {
+        this.set(self.serverSocketStreams)
+      }
+    })
+    new promClient.Gauge({ // eslint-disable-line no-new
+      name: 'dht_server_socket_pending_writes',
+      help: 'Total writes pending on the streams of the server socket',
+      collect () {
+        this.set(self.serverSocketPendingWrites)
       }
     })
 

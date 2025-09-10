@@ -42,9 +42,13 @@ test('Prometheus metrics', async (t) => {
     t.is(getMetricValue(lines, 'dht_client_socket_bytes_received'), 0, 'dht_client_socket_bytes_received')
     t.is(getMetricValue(lines, 'dht_client_socket_packets_received'), 0, 'dht_client_socket_packets_received')
     t.is(getMetricValue(lines, 'dht_server_socket_bytes_transmitted'), 0, 'dht_server_socket_bytes_transmitted')
+    t.is(getMetricValue(lines, 'dht_client_socket_streams'), 0, 'dht_client_socket_streams')
+    t.is(getMetricValue(lines, 'dht_client_socket_pending_writes'), 0, 'dht_client_socket_pending_writes')
     t.is(getMetricValue(lines, 'dht_server_socket_packets_transmitted'), 0, 'dht_server_socket_packets_transmitted')
     t.is(getMetricValue(lines, 'dht_server_socket_bytes_received'), 0, 'dht_server_socket_bytes_received')
     t.is(getMetricValue(lines, 'dht_server_socket_packets_received'), 0, 'dht_server_socket_packets_received')
+    t.is(getMetricValue(lines, 'dht_server_socket_streams'), 0, 'dht_server_socket_streams')
+    t.is(getMetricValue(lines, 'dht_server_socket_pending_writes'), 0, 'dht_server_socket_pending_writes')
     t.is(getMetricValue(lines, 'dht_nr_nodes'), 0, 'dht_nr_nodes received')
     t.is(getMetricValue(lines, 'dht_nr_unique_node_ips'), 0, 'dht_nr_unique_node_ips')
     t.is(getMetricValue(lines, 'dht_is_firewalled'), 0, 'dht_is_firewalled')
@@ -118,7 +122,7 @@ test('toJson', async t => {
       : 1
   }
 
-  t.is(nrStrStats, 32, 'expected nr of stats')
+  t.is(nrStrStats, 36, 'expected nr of stats')
   t.is(nrJsonStats, nrStrStats)
   t.is(nrPromStats + 1, nrStrStats) // dht_nr_records not set since not yet persisted
 })
