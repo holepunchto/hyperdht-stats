@@ -76,21 +76,6 @@ class HyperDhtStats {
     return this.dht.io.serverSocket?.packetsReceived || 0
   }
 
-  get serverSocketStreams () {
-    return this.dht.io.serverSocket?.streams.size || 0
-  }
-
-  get serverSocketPendingWrites () {
-    if (!this.dht.io.serverSocket?.streams) return 0
-
-    let res = 0
-    for (const s of this.dht.io.serverSocket.streams) {
-      res += s._wreqs.length - s._wfree.length
-    }
-
-    return res
-  }
-
   get udxBytesTransmitted () {
     return this.dht.udx.bytesTransmitted
   }
