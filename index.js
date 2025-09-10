@@ -47,6 +47,19 @@ class HyperDhtStats {
     return this.dht.io.clientSocket?.packetsReceived || 0
   }
 
+  get streams () {
+    return this.dht.rawStreams.size
+  }
+
+  get pendingWrites () {
+    let res = 0
+    for (const s of this.dht.rawStreams) {
+      res += s._wreqs.length - s._wfree.length
+    }
+
+    return res
+  }
+
   get serverSocketBytesTransmitted () {
     return this.dht.io.serverSocket?.bytesTransmitted || 0
   }
@@ -125,6 +138,8 @@ class HyperDhtStats {
       isFirewalled: this.isFirewalled,
       localAddress: this.getLocalAddress(),
       remoteAddress: this.getRemoteAddress(),
+      streams: this.streams,
+      pendingWrites: this.pendingWrites,
       clientSocketBytesTransmitted: this.clientSocketBytesTransmitted,
       clientSocketPacketsTransmitted: this.clientSocketPacketsTransmitted,
       clientSocketBytesReceived: this.clientSocketBytesReceived,
@@ -157,6 +172,8 @@ class HyperDhtStats {
   - dht_remote_address: ${this.getRemoteAddress()}
   - dht_local_address: ${this.getLocalAddress()}
   - dht_is_firewalled: ${this.isFirewalled}
+  - dht_streams: ${this.streams}
+  - dht_pending_writes: ${this.pendingWrites}
   - dht_client_socket_bytes_transmitted: ${this.clientSocketBytesTransmitted}
   - dht_client_socket_packets_transmitted: ${this.clientSocketPacketsTransmitted}
   - dht_client_socket_bytes_received: ${this.clientSocketBytesReceived}
@@ -326,6 +343,21 @@ UDX Stats
       help: 'Total packets dropped (by the UDX instance of the DHT). Only defined on Linux.',
       collect () {
         if (self.udxPacketsDropped !== null) this.set(self.udxPacketsDropped)
+      }
+    })
+
+    new promClient.Gauge({ // eslint-disable-line no-new
+      name: 'dht_streams',
+      help: 'Total streams managed by the DHT',
+      collect () {
+        this.set(self.streams)
+      }
+    })
+    new promClient.Gauge({ // eslint-disable-line no-new
+      name: 'dht_pending_writes',
+      help: 'Total pending writes on the streams of the DHT',
+      collect () {
+        this.set(self.streams)
       }
     })
 
