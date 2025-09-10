@@ -172,8 +172,8 @@ class HyperDhtStats {
   - dht_remote_address: ${this.getRemoteAddress()}
   - dht_local_address: ${this.getLocalAddress()}
   - dht_is_firewalled: ${this.isFirewalled}
-  - streams: ${this.streams}
-  - pending_writes: ${this.pendingWrites}
+  - dht_streams: ${this.streams}
+  - dht_pending_writes: ${this.pendingWrites}
   - dht_client_socket_bytes_transmitted: ${this.clientSocketBytesTransmitted}
   - dht_client_socket_packets_transmitted: ${this.clientSocketPacketsTransmitted}
   - dht_client_socket_bytes_received: ${this.clientSocketBytesReceived}
