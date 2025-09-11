@@ -357,7 +357,7 @@ UDX Stats
       name: 'dht_pending_writes',
       help: 'Total pending writes on the streams of the DHT',
       collect () {
-        this.set(self.streams)
+        this.set(self.pendingWrites)
       }
     })
 
