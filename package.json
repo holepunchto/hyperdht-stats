@@ -1,6 +1,6 @@
 {
   "name": "hyperdht-stats",
-  "version": "1.8.1",
+  "version": "1.9.0",
   "description": "HyperDHT stats, with Prometheus support",
   "main": "index.js",
   "scripts": {
