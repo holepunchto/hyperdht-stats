@@ -11,6 +11,10 @@ class HyperDhtStats {
     return this.dht.stats.punches
   }
 
+  get relaying () {
+    return this.dht.stats.relaying || { attempts: 0, successes: 0, aborts: 0 } // For compat with hyperdht < 6.25.0
+  }
+
   get queries () {
     return this.dht.stats.queries
   }
@@ -152,6 +156,7 @@ class HyperDhtStats {
       nrUniqueNodeIPs: this.nrUniqueNodeIPs,
       nrRecords: this.nrRecords || 0,
       punches: { ...this.punches },
+      relaying: { ...this.relaying },
       queries: { ...this.queries },
       pingCmds: { ...this.pingCmds },
       pingNatCmds: { ...this.pingNatCmds },
@@ -188,6 +193,9 @@ class HyperDhtStats {
   - dht_consistent_punches: ${this.punches.consistent}
   - dht_random_punches: ${this.punches.random}
   - dht_open_punches: ${this.punches.open}
+  - dht_relay_attempts: ${this.relaying.attempts}
+  - dht_relay_successes: ${this.relaying.successes}
+  - dht_relay_aborts: ${this.relaying.aborts}
   - dht_active_queries: ${this.queries.active}
   - dht_total_queries: ${this.queries.total}
   - dht_ping_received: ${this.pingCmds.rx}
@@ -227,6 +235,30 @@ UDX Stats
       help: 'Total number of open holepunches performed by the hyperdht instance',
       collect () {
         this.set(self.punches.open)
+      }
+    })
+
+    new promClient.Gauge({ // eslint-disable-line no-new
+      name: 'dht_relay_attempts',
+      help: 'Total relay attempts (as of 2025-10-06 only considers servers, not client connections)',
+      collect () {
+        this.set(self.relaying.attempts)
+      }
+    })
+
+    new promClient.Gauge({ // eslint-disable-line no-new
+      name: 'dht_relay_successes',
+      help: 'Total relay successes (as of 2025-10-06 only considers servers, not client connections)',
+      collect () {
+        this.set(self.relaying.successes)
+      }
+    })
+
+    new promClient.Gauge({ // eslint-disable-line no-new
+      name: 'dht_relay_aborts',
+      help: 'Total relay aborts (as of 2025-10-06 only considers servers, not client connections)',
+      collect () {
+        this.set(self.relaying.aborts)
       }
     })
 
