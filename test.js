@@ -26,7 +26,6 @@ test('Prometheus metrics', async (t) => {
 
     if (DEBUG) console.log(metrics)
 
-    t.is(getMetricValue(lines, 'dht_total_queries'), 0, 'init dht_total_queries')
     t.is(getMetricValue(lines, 'dht_consistent_punches'), 0, 'dht_consistent_punches')
     t.is(getMetricValue(lines, 'dht_random_punches'), 0, 'dht_random_punches')
     t.is(getMetricValue(lines, 'dht_open_punches'), 0, 'dht_open_punches')
@@ -35,6 +34,8 @@ test('Prometheus metrics', async (t) => {
     t.is(getMetricValue(lines, 'dht_relay_aborts'), 0, 'dht_relay_aborts')
     t.is(getMetricValue(lines, 'dht_active_queries'), 0, 'dht_active_queries')
     t.is(getMetricValue(lines, 'dht_total_queries'), 0, 'dht_total_queries')
+    t.is(getMetricValue(lines, 'dht_total_requests'), 0, 'init dht_total_requests')
+    t.is(getMetricValue(lines, 'dht_active_requests'), 0, 'init dht_active_requests')
     t.is(getMetricValue(lines, 'udx_total_bytes_transmitted'), 0, 'udx_total_bytes_transmitted')
     t.is(getMetricValue(lines, 'udx_total_packets_transmitted'), 0, 'udx_total_packets_transmitted')
     t.is(getMetricValue(lines, 'udx_total_bytes_received'), 0, 'udx_total_bytes_received')
@@ -78,6 +79,8 @@ test('Prometheus metrics', async (t) => {
     const nameWithLabel = `dht_remote_address{address="${remoteAddress}"}`
     t.is(getMetricValue(lines, nameWithLabel), 1, 'Returns correct remote address when available')
   }
+
+  console.log(await promClient.register.metrics())
 })
 
 test('toString', async t => {
@@ -123,7 +126,7 @@ test('toJson', async t => {
       : 1
   }
 
-  t.is(nrStrStats, 37, 'expected nr of stats')
+  t.is(nrStrStats, 39, 'expected nr of stats')
   t.is(nrJsonStats, nrStrStats)
   t.is(nrPromStats + 1, nrStrStats) // dht_nr_records not set since not yet persisted
 })
