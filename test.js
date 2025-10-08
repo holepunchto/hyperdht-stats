@@ -43,14 +43,46 @@ test('Prometheus metrics', async (t) => {
     t.is(getMetricValue(lines, 'udx_packets_dropped_total'), 0, 'udx_packets_dropped_total') // Note: only true for Linux, this stat is not defined on mac/windows
     t.is(getMetricValue(lines, 'dht_streams'), 0, 'dht_streams')
     t.is(getMetricValue(lines, 'dht_pending_writes'), 0, 'dht_pending_writes')
-    t.is(getMetricValue(lines, 'dht_client_socket_bytes_transmitted'), 0, 'dht_client_socket_bytes_transmitted')
-    t.is(getMetricValue(lines, 'dht_client_socket_packets_transmitted'), 0, 'dht_client_socket_packets_transmitted')
-    t.is(getMetricValue(lines, 'dht_client_socket_bytes_received'), 0, 'dht_client_socket_bytes_received')
-    t.is(getMetricValue(lines, 'dht_client_socket_packets_received'), 0, 'dht_client_socket_packets_received')
-    t.is(getMetricValue(lines, 'dht_server_socket_bytes_transmitted'), 0, 'dht_server_socket_bytes_transmitted')
-    t.is(getMetricValue(lines, 'dht_server_socket_packets_transmitted'), 0, 'dht_server_socket_packets_transmitted')
-    t.is(getMetricValue(lines, 'dht_server_socket_bytes_received'), 0, 'dht_server_socket_bytes_received')
-    t.is(getMetricValue(lines, 'dht_server_socket_packets_received'), 0, 'dht_server_socket_packets_received')
+    t.is(
+      getMetricValue(lines, 'dht_client_socket_bytes_transmitted'),
+      0,
+      'dht_client_socket_bytes_transmitted'
+    )
+    t.is(
+      getMetricValue(lines, 'dht_client_socket_packets_transmitted'),
+      0,
+      'dht_client_socket_packets_transmitted'
+    )
+    t.is(
+      getMetricValue(lines, 'dht_client_socket_bytes_received'),
+      0,
+      'dht_client_socket_bytes_received'
+    )
+    t.is(
+      getMetricValue(lines, 'dht_client_socket_packets_received'),
+      0,
+      'dht_client_socket_packets_received'
+    )
+    t.is(
+      getMetricValue(lines, 'dht_server_socket_bytes_transmitted'),
+      0,
+      'dht_server_socket_bytes_transmitted'
+    )
+    t.is(
+      getMetricValue(lines, 'dht_server_socket_packets_transmitted'),
+      0,
+      'dht_server_socket_packets_transmitted'
+    )
+    t.is(
+      getMetricValue(lines, 'dht_server_socket_bytes_received'),
+      0,
+      'dht_server_socket_bytes_received'
+    )
+    t.is(
+      getMetricValue(lines, 'dht_server_socket_packets_received'),
+      0,
+      'dht_server_socket_packets_received'
+    )
     t.is(getMetricValue(lines, 'dht_nr_nodes'), 0, 'dht_nr_nodes received')
     t.is(getMetricValue(lines, 'dht_nr_unique_node_ips'), 0, 'dht_nr_unique_node_ips')
     t.is(getMetricValue(lines, 'dht_is_firewalled'), 0, 'dht_is_firewalled')
@@ -65,7 +97,11 @@ test('Prometheus metrics', async (t) => {
 
     // Flow where it is persistent is a bit harder to test,
     // so that path is untested for now
-    t.is(getMetricValue(lines, 'dht_nr_records', { errOnNoMatch: false }), null, 'dht_nr_records not exported when not persistent')
+    t.is(
+      getMetricValue(lines, 'dht_nr_records', { errOnNoMatch: false }),
+      null,
+      'dht_nr_records not exported when not persistent'
+    )
   }
 
   await dht.fullyBootstrapped()
@@ -81,7 +117,7 @@ test('Prometheus metrics', async (t) => {
   }
 })
 
-test('toString', async t => {
+test('toString', async (t) => {
   const testnet = await createTestnet()
   const bootstrap = testnet.bootstrap
 
@@ -98,7 +134,7 @@ test('toString', async t => {
   t.ok(str.includes('DHT Stats', 'toString includes DHT stats'))
 })
 
-test('toJson', async t => {
+test('toJson', async (t) => {
   const testnet = await createTestnet()
   const bootstrap = testnet.bootstrap
 
@@ -119,9 +155,7 @@ test('toJson', async t => {
   let nrJsonStats = 0
   for (const value of Object.values(jsonStats)) {
     // Some stats are nested for JSON, so we want to count all the nested stats
-    nrJsonStats += value !== null && typeof value === 'object'
-      ? [...Object.keys(value)].length
-      : 1
+    nrJsonStats += value !== null && typeof value === 'object' ? [...Object.keys(value)].length : 1
   }
 
   t.is(nrStrStats, 39, 'expected nr of stats')
@@ -129,7 +163,7 @@ test('toJson', async t => {
   t.is(nrPromStats + 1, nrStrStats) // dht_nr_records not set since not yet persisted
 })
 
-function getMetricValue (lines, name, { errOnNoMatch = true } = {}) {
+function getMetricValue(lines, name, { errOnNoMatch = true } = {}) {
   const match = lines.find((l) => l.startsWith(`${name} `))
   if (!match) {
     if (errOnNoMatch) throw new Error(`No match for ${name}`)
