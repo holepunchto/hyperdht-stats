@@ -79,8 +79,6 @@ test('Prometheus metrics', async (t) => {
     const nameWithLabel = `dht_remote_address{address="${remoteAddress}"}`
     t.is(getMetricValue(lines, nameWithLabel), 1, 'Returns correct remote address when available')
   }
-
-  console.log(await promClient.register.metrics())
 })
 
 test('toString', async t => {
