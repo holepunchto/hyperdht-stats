@@ -15,6 +15,10 @@ class HyperDhtStats {
     return this.dht.stats.relaying || { attempts: 0, successes: 0, aborts: 0 } // For compat with hyperdht < 6.25.0
   }
 
+  get requests () {
+    return this.dht.stats.requests || { active: 0, total: 0 } // for compat with dht-rpc < 6.20.1
+  }
+
   get queries () {
     return this.dht.stats.queries
   }
@@ -157,6 +161,7 @@ class HyperDhtStats {
       nrRecords: this.nrRecords || 0,
       punches: { ...this.punches },
       relaying: { ...this.relaying },
+      requests: { ...this.requests },
       queries: { ...this.queries },
       pingCmds: { ...this.pingCmds },
       pingNatCmds: { ...this.pingNatCmds },
@@ -196,6 +201,8 @@ class HyperDhtStats {
   - dht_relay_attempts: ${this.relaying.attempts}
   - dht_relay_successes: ${this.relaying.successes}
   - dht_relay_aborts: ${this.relaying.aborts}
+  - dht_active_requests: ${this.requests.active}
+  - dht_total_requests: ${this.requests.total}
   - dht_active_queries: ${this.queries.active}
   - dht_total_queries: ${this.queries.total}
   - dht_ping_received: ${this.pingCmds.rx}
@@ -275,6 +282,22 @@ UDX Stats
       help: 'Total number of queries in the dht-rpc instance',
       collect () {
         this.set(self.queries.total)
+      }
+    })
+
+    new promClient.Gauge({ // eslint-disable-line no-new
+      name: 'dht_active_requests',
+      help: 'Total number of active requests in the dht-rpc instance (one query can result in multiple requests)',
+      collect () {
+        this.set(self.requests.active)
+      }
+    })
+
+    new promClient.Gauge({ // eslint-disable-line no-new
+      name: 'dht_total_requests',
+      help: 'Total number of requests made by the dht-rpc instance (one query can result in multiple requests)',
+      collect () {
+        this.set(self.requests.total)
       }
     })
 
