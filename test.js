@@ -4,7 +4,7 @@ const Hyperdht = require('hyperdht')
 const createTestnet = require('hyperdht/testnet')
 const HyperDhtStats = require('.')
 
-const DEBUG = true
+const DEBUG = false
 
 test('Prometheus metrics', async (t) => {
   const testnet = await createTestnet()
@@ -158,9 +158,9 @@ test('toJson', async (t) => {
     nrJsonStats += value !== null && typeof value === 'object' ? [...Object.keys(value)].length : 1
   }
 
-  t.is(nrStrStats, 39, 'expected nr of stats')
+  t.is(nrStrStats, 42, 'expected nr of stats')
   t.is(nrJsonStats, nrStrStats)
-  t.is(nrPromStats + 1, nrStrStats) // dht_nr_records not set since not yet persisted
+  t.is(nrPromStats + 1, nrStrStats, 'equal prometheus and JSON stats') // dht_nr_records not set since not yet persisted
 })
 
 function getMetricValue(lines, name, { errOnNoMatch = true } = {}) {

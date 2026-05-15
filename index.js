@@ -203,6 +203,9 @@ class HyperDhtStats {
   - dht_relay_aborts: ${this.relaying.aborts}
   - dht_active_requests: ${this.requests.active}
   - dht_total_requests: ${this.requests.total}
+  - dht_request_responses: ${this.requests.responses}
+  - dht_request_timeouts: ${this.requests.timeouts}
+  - dht_request_retries: ${this.requests.retries}
   - dht_active_queries: ${this.queries.active}
   - dht_total_queries: ${this.queries.total}
   - dht_ping_received: ${this.pingCmds.rx}
@@ -308,6 +311,33 @@ UDX Stats
       help: 'Total number of requests made by the dht-rpc instance (one query can result in multiple requests)',
       collect() {
         this.set(self.requests.total)
+      }
+    })
+
+    new promClient.Gauge({
+      // eslint-disable-line no-new
+      name: 'dht_request_responses',
+      help: 'Total responses received to dht-rpc requests',
+      collect() {
+        this.set(self.requests.responses)
+      }
+    })
+
+    new promClient.Gauge({
+      // eslint-disable-line no-new
+      name: 'dht_request_timeouts',
+      help: 'Total dht-rpc requests that timed out',
+      collect() {
+        this.set(self.requests.timeouts)
+      }
+    })
+
+    new promClient.Gauge({
+      // eslint-disable-line no-new
+      name: 'dht_request_retries',
+      help: 'Total retried dht-rpc requests',
+      collect() {
+        this.set(self.requests.retries)
       }
     })
 
