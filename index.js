@@ -19,6 +19,10 @@ class HyperDhtStats {
     return this.dht.stats.requests || { active: 0, total: 0 } // for compat with dht-rpc < 6.20.1
   }
 
+  get socketPool() {
+    return this.dht.stats.socketPool || { socketsAdded: 0, socketsRemoved: 0 }
+  }
+
   get queries() {
     return this.dht.stats.queries
   }
@@ -162,6 +166,7 @@ class HyperDhtStats {
       punches: { ...this.punches },
       relaying: { ...this.relaying },
       requests: { ...this.requests },
+      socketPool: { ...this.socketPool },
       queries: { ...this.queries },
       pingCmds: { ...this.pingCmds },
       pingNatCmds: { ...this.pingNatCmds },
@@ -206,6 +211,8 @@ class HyperDhtStats {
   - dht_request_responses: ${this.requests.responses}
   - dht_request_timeouts: ${this.requests.timeouts}
   - dht_request_retries: ${this.requests.retries}
+  - dht_socket_pool_sockets_added: ${this.socketPool.socketsAdded}
+  - dht_socket_pool_sockets_removed: ${this.socketPool.socketsRemoved}
   - dht_active_queries: ${this.queries.active}
   - dht_total_queries: ${this.queries.total}
   - dht_ping_received: ${this.pingCmds.rx}
@@ -338,6 +345,22 @@ UDX Stats
       help: 'Total retried dht-rpc requests',
       collect() {
         this.set(self.requests.retries)
+      }
+    })
+
+    new promClient.Gauge({
+      name: 'dht_socket_pool_sockets_added',
+      help: 'Total sockets added to the socket pool of the DHT',
+      collect() {
+        this.set(self.socketPool.socketsAdded)
+      }
+    })
+
+    new promClient.Gauge({
+      name: 'dht_socket_pool_sockets_removed',
+      help: 'Total sockets removed from the socket pool of the DHT',
+      collect() {
+        this.set(self.socketPool.socketsRemoved)
       }
     })
 
