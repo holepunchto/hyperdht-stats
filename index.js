@@ -8,7 +8,9 @@ class HyperDhtStats {
   }
 
   get punches() {
-    return this.dht.stats.punches
+    const punches = this.dht.stats.punches
+    if (!punches.tryLater) return { ...punches, tryLater: 0 }
+    return punches
   }
 
   get relaying() {
@@ -203,6 +205,7 @@ class HyperDhtStats {
   - dht_consistent_punches: ${this.punches.consistent}
   - dht_random_punches: ${this.punches.random}
   - dht_open_punches: ${this.punches.open}
+  - dht_holepunch_try_later_total: ${this.punches.tryLater}
   - dht_relay_attempts: ${this.relaying.attempts}
   - dht_relay_successes: ${this.relaying.successes}
   - dht_relay_aborts: ${this.relaying.aborts}
@@ -255,6 +258,13 @@ UDX Stats
       help: 'Total number of open holepunches performed by the hyperdht instance',
       collect() {
         this.set(self.punches.open)
+      }
+    })
+    new promClient.Gauge({
+      name: 'dht_holepunch_try_later_total',
+      help: 'Total number of times this node told a peer to try holepunching later (its random-punch limit was reached)',
+      collect() {
+        this.set(self.punches.tryLater)
       }
     })
 

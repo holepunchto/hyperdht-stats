@@ -29,6 +29,7 @@ test('Prometheus metrics', async (t) => {
     t.is(getMetricValue(lines, 'dht_consistent_punches'), 0, 'dht_consistent_punches')
     t.is(getMetricValue(lines, 'dht_random_punches'), 0, 'dht_random_punches')
     t.is(getMetricValue(lines, 'dht_open_punches'), 0, 'dht_open_punches')
+    t.is(getMetricValue(lines, 'dht_holepunch_try_later_total'), 0, 'dht_holepunch_try_later_total')
     t.is(getMetricValue(lines, 'dht_relay_attempts'), 0, 'dht_relay_attempts')
     t.is(getMetricValue(lines, 'dht_relay_successes'), 0, 'dht_relay_successes')
     t.is(getMetricValue(lines, 'dht_relay_aborts'), 0, 'dht_relay_aborts')
@@ -206,7 +207,7 @@ test('toJson', async (t) => {
     nrJsonStats += value !== null && typeof value === 'object' ? [...Object.keys(value)].length : 1
   }
 
-  t.is(nrStrStats, 44, 'expected nr of stats')
+  t.is(nrStrStats, 45, 'expected nr of stats')
   t.is(nrJsonStats, nrStrStats)
   t.is(nrPromStats + 1, nrStrStats, 'equal prometheus and JSON stats') // dht_nr_records not set since not yet persisted
 })
