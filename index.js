@@ -9,7 +9,7 @@ class HyperDhtStats {
 
   get punches() {
     const punches = this.dht.stats.punches
-    if (!punches.tryLater) return { ...punches, tryLater: 0 }
+    if (!punches.tryLater) punches.tryLater = 0
     return punches
   }
 
