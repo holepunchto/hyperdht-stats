@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/holepunchto/hyperdht-stats#readme",
   "devDependencies": {
+    "blind-relay": "^1.6.1",
     "brittle": "^3.7.0",
     "hyperdht": "github:holepunchto/hyperdht#main",
     "prettier": "^3.6.2",

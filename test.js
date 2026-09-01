@@ -1,7 +1,10 @@
 const test = require('brittle')
 const promClient = require('prom-client')
+const RelayServer = require('blind-relay').Server
 const Hyperdht = require('hyperdht')
 const createTestnet = require('hyperdht/testnet')
+const Nat = require('hyperdht/lib/nat')
+const { FIREWALL } = require('hyperdht/lib/constants')
 const HyperDhtStats = require('.')
 
 const DEBUG = false
@@ -30,6 +33,11 @@ test('Prometheus metrics', async (t) => {
     t.is(getMetricValue(lines, 'dht_random_punches'), 0, 'dht_random_punches')
     t.is(getMetricValue(lines, 'dht_open_punches'), 0, 'dht_open_punches')
     t.is(getMetricValue(lines, 'dht_holepunch_try_later_total'), 0, 'dht_holepunch_try_later_total')
+    t.is(
+      getMetricValue(lines, 'dht_holepunch_try_later_relayed_handshakes_total'),
+      0,
+      'dht_holepunch_try_later_relayed_handshakes_total'
+    )
     t.is(getMetricValue(lines, 'dht_relay_attempts'), 0, 'dht_relay_attempts')
     t.is(getMetricValue(lines, 'dht_relay_successes'), 0, 'dht_relay_successes')
     t.is(getMetricValue(lines, 'dht_relay_aborts'), 0, 'dht_relay_aborts')
@@ -166,6 +174,129 @@ test('Prometheus metrics', async (t) => {
   }
 })
 
+test('dht_holepunch_try_later_total counts peers we throttled', async (t) => {
+  const testnet = await createTestnet()
+  const bootstrap = testnet.bootstrap
+
+  // A server only answers TRY_LATER when a RANDOM firewall is involved, and
+  // localhost nodes never analyse as RANDOM, so force it for the client alone
+  // (forcing both sides instead makes the client abort on double-random NATs)
+  const updateFirewall = Nat.prototype._updateFirewall
+  let randomNode = null
+  Nat.prototype._updateFirewall = function () {
+    updateFirewall.call(this)
+    if (this.dht === randomNode && this.sampled >= 3) this.firewall = FIREWALL.RANDOM
+  }
+
+  const dht = new Hyperdht({ bootstrap })
+  const client = new Hyperdht({ bootstrap })
+  randomNode = client
+
+  const stats = new HyperDhtStats(dht)
+  stats.registerPrometheusMetrics(promClient)
+
+  t.teardown(async () => {
+    Nat.prototype._updateFirewall = updateFirewall
+    promClient.register.clear()
+    await client.destroy()
+    await dht.destroy()
+    await testnet.destroy()
+  })
+
+  const server = dht.createServer((socket) => socket.on('error', () => {}))
+  await server.listen()
+
+  // The other half of the condition: make the random-punch throttle bite
+  dht._lastRandomPunch = Date.now()
+
+  const socket = client.connect(server.publicKey)
+  socket.on('error', () => {})
+  t.teardown(() => socket.destroy())
+
+  // The client backs off for 10s+ once told to wait, so watch the stat itself
+  const deadline = Date.now() + 20000
+  while (stats.punches.tryLater === 0 && Date.now() < deadline) {
+    await new Promise((resolve) => setTimeout(resolve, 50))
+  }
+
+  const lines = (await promClient.register.metrics()).split('\n')
+  t.ok(getMetricValue(lines, 'dht_holepunch_try_later_total') > 0, 'dht_holepunch_try_later_total')
+  t.is(
+    getMetricValue(lines, 'dht_holepunch_try_later_relayed_handshakes_total'),
+    0,
+    'relayed handshakes not counted, this handshake had no relay to fall back on'
+  )
+})
+
+test('dht_holepunch_try_later_relayed_handshakes_total counts relayed handshakes', async (t) => {
+  const testnet = await createTestnet()
+  const bootstrap = testnet.bootstrap
+
+  const updateFirewall = Nat.prototype._updateFirewall
+  let randomNode = null
+  Nat.prototype._updateFirewall = function () {
+    updateFirewall.call(this)
+    if (this.dht === randomNode && this.sampled >= 3) this.firewall = FIREWALL.RANDOM
+  }
+
+  const dht = new Hyperdht({ bootstrap })
+  const client = new Hyperdht({ bootstrap })
+  const relayNode = new Hyperdht({ bootstrap })
+  randomNode = client
+
+  const stats = new HyperDhtStats(dht)
+  stats.registerPrometheusMetrics(promClient)
+
+  const relay = new RelayServer({
+    createStream(opts) {
+      return relayNode.createRawStream({ ...opts, framed: true })
+    }
+  })
+
+  t.teardown(async () => {
+    Nat.prototype._updateFirewall = updateFirewall
+    promClient.register.clear()
+    relay.close()
+    await client.destroy()
+    await dht.destroy()
+    await relayNode.destroy()
+    await testnet.destroy()
+  })
+
+  const relayServer = relayNode.createServer((socket) => {
+    relay.accept(socket, { id: socket.remotePublicKey }).on('error', () => {})
+  })
+  await relayServer.listen()
+
+  // A handshake is only counted as relayed when the server has somewhere to
+  // fall back to, which is what gives the handshake its relay token
+  const server = dht.createServer({ relayThrough: relayServer.publicKey }, (socket) =>
+    socket.on('error', () => {})
+  )
+  await server.listen()
+
+  // The other half of the condition: make the random-punch throttle bite
+  dht._lastRandomPunch = Date.now()
+
+  const socket = client.connect(server.publicKey)
+  socket.on('error', () => {})
+  t.teardown(() => socket.destroy())
+
+  // The client backs off for 10s+ once told to wait, so watch the stat itself
+  const deadline = Date.now() + 20000
+  while (stats.punches.tryLater === 0 && Date.now() < deadline) {
+    await new Promise((resolve) => setTimeout(resolve, 50))
+  }
+
+  const lines = (await promClient.register.metrics()).split('\n')
+  t.ok(getMetricValue(lines, 'dht_holepunch_try_later_total') > 0, 'dht_holepunch_try_later_total')
+  t.is(
+    getMetricValue(lines, 'dht_holepunch_try_later_relayed_handshakes_total'),
+    1,
+    'dht_holepunch_try_later_relayed_handshakes_total'
+  )
+})
+
 test('toString', async (t) => {
   const testnet = await createTestnet()
   const bootstrap = testnet.bootstrap
@@ -207,7 +338,7 @@ test('toJson', async (t) => {
     nrJsonStats += value !== null && typeof value === 'object' ? [...Object.keys(value)].length : 1
   }
 
-  t.is(nrStrStats, 45, 'expected nr of stats')
+  t.is(nrStrStats, 46, 'expected nr of stats')
   t.is(nrJsonStats, nrStrStats)
   t.is(nrPromStats + 1, nrStrStats, 'equal prometheus and JSON stats') // dht_nr_records not set since not yet persisted
 })
