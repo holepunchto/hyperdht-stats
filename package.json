@@ -25,7 +25,7 @@
   "devDependencies": {
     "blind-relay": "^1.6.1",
     "brittle": "^3.7.0",
-    "hyperdht": "github:holepunchto/hyperdht#main",
+    "hyperdht": "^6.34.0",
     "prettier": "^3.6.2",
     "prettier-config-holepunch": "^2.0.0",
     "prom-client": "^15.1.3"
