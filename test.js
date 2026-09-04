@@ -29,6 +29,12 @@ test('Prometheus metrics', async (t) => {
     t.is(getMetricValue(lines, 'dht_consistent_punches'), 0, 'dht_consistent_punches')
     t.is(getMetricValue(lines, 'dht_random_punches'), 0, 'dht_random_punches')
     t.is(getMetricValue(lines, 'dht_open_punches'), 0, 'dht_open_punches')
+    t.is(getMetricValue(lines, 'dht_holepunch_try_later_total'), 0, 'dht_holepunch_try_later_total')
+    t.is(
+      getMetricValue(lines, 'dht_holepunch_try_later_relayed_handshakes_total'),
+      0,
+      'dht_holepunch_try_later_relayed_handshakes_total'
+    )
     t.is(getMetricValue(lines, 'dht_relay_attempts'), 0, 'dht_relay_attempts')
     t.is(getMetricValue(lines, 'dht_relay_successes'), 0, 'dht_relay_successes')
     t.is(getMetricValue(lines, 'dht_relay_aborts'), 0, 'dht_relay_aborts')
@@ -36,6 +42,12 @@ test('Prometheus metrics', async (t) => {
     t.is(getMetricValue(lines, 'dht_total_queries'), 0, 'dht_total_queries')
     t.is(getMetricValue(lines, 'dht_total_requests'), 0, 'init dht_total_requests')
     t.is(getMetricValue(lines, 'dht_active_requests'), 0, 'init dht_active_requests')
+    t.is(getMetricValue(lines, 'dht_socket_pool_sockets_added'), 0, 'dht_socket_pool_sockets_added')
+    t.is(
+      getMetricValue(lines, 'dht_socket_pool_sockets_removed'),
+      0,
+      'dht_socket_pool_sockets_removed'
+    )
     t.is(getMetricValue(lines, 'udx_total_bytes_transmitted'), 0, 'udx_total_bytes_transmitted')
     t.is(getMetricValue(lines, 'udx_total_packets_transmitted'), 0, 'udx_total_packets_transmitted')
     t.is(getMetricValue(lines, 'udx_total_bytes_received'), 0, 'udx_total_bytes_received')
@@ -115,6 +127,48 @@ test('Prometheus metrics', async (t) => {
     const nameWithLabel = `dht_remote_address{address="${remoteAddress}"}`
     t.is(getMetricValue(lines, nameWithLabel), 1, 'Returns correct remote address when available')
   }
+
+  {
+    const nrConnections = 2
+    const clients = []
+    t.teardown(async () => {
+      await Promise.all(clients.map((c) => c.destroy()))
+    })
+
+    const server = dht.createServer((socket) => socket.on('error', () => {}))
+    await server.listen()
+
+    // The socket pool is only used while holepunching, so the peers
+    // connecting to us must be firewalled (the default)
+    for (let i = 0; i < nrConnections; i++) {
+      const client = new Hyperdht({ bootstrap })
+      clients.push(client)
+
+      const socket = client.connect(server.publicKey)
+      socket.on('error', () => {})
+      await new Promise((resolve) => socket.on('open', resolve))
+      socket.destroy()
+    }
+
+    // Sockets leave the pool a bit after their stream closes
+    while (stats.socketPool.socketsRemoved !== nrConnections) {
+      await new Promise((resolve) => setTimeout(resolve, 20))
+    }
+
+    const metrics = await promClient.register.metrics()
+    const lines = metrics.split('\n')
+
+    t.is(
+      getMetricValue(lines, 'dht_socket_pool_sockets_added'),
+      nrConnections,
+      'dht_socket_pool_sockets_added'
+    )
+    t.is(
+      getMetricValue(lines, 'dht_socket_pool_sockets_removed'),
+      nrConnections,
+      'dht_socket_pool_sockets_removed'
+    )
+  }
 })
 
 test('toString', async (t) => {
@@ -158,7 +212,7 @@ test('toJson', async (t) => {
     nrJsonStats += value !== null && typeof value === 'object' ? [...Object.keys(value)].length : 1
   }
 
-  t.is(nrStrStats, 42, 'expected nr of stats')
+  t.is(nrStrStats, 46, 'expected nr of stats')
   t.is(nrJsonStats, nrStrStats)
   t.is(nrPromStats + 1, nrStrStats, 'equal prometheus and JSON stats') // dht_nr_records not set since not yet persisted
 })

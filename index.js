@@ -8,7 +8,15 @@ class HyperDhtStats {
   }
 
   get punches() {
-    return this.dht.stats.punches
+    return (
+      this.dht.stats.punches || {
+        consistent: 0,
+        random: 0,
+        open: 0,
+        tryLater: 0,
+        tryLaterRelayedHandshakesAtLeastOnce: 0
+      }
+    )
   }
 
   get relaying() {
@@ -17,6 +25,10 @@ class HyperDhtStats {
 
   get requests() {
     return this.dht.stats.requests || { active: 0, total: 0 } // for compat with dht-rpc < 6.20.1
+  }
+
+  get socketPool() {
+    return this.dht.stats.socketPool || { socketsAdded: 0, socketsRemoved: 0 }
   }
 
   get queries() {
@@ -162,6 +174,7 @@ class HyperDhtStats {
       punches: { ...this.punches },
       relaying: { ...this.relaying },
       requests: { ...this.requests },
+      socketPool: { ...this.socketPool },
       queries: { ...this.queries },
       pingCmds: { ...this.pingCmds },
       pingNatCmds: { ...this.pingNatCmds },
@@ -198,6 +211,8 @@ class HyperDhtStats {
   - dht_consistent_punches: ${this.punches.consistent}
   - dht_random_punches: ${this.punches.random}
   - dht_open_punches: ${this.punches.open}
+  - dht_holepunch_try_later_total: ${this.punches.tryLater}
+  - dht_holepunch_try_later_relayed_handshakes_total: ${this.punches.tryLaterRelayedHandshakesAtLeastOnce}
   - dht_relay_attempts: ${this.relaying.attempts}
   - dht_relay_successes: ${this.relaying.successes}
   - dht_relay_aborts: ${this.relaying.aborts}
@@ -206,6 +221,8 @@ class HyperDhtStats {
   - dht_request_responses: ${this.requests.responses}
   - dht_request_timeouts: ${this.requests.timeouts}
   - dht_request_retries: ${this.requests.retries}
+  - dht_socket_pool_sockets_added: ${this.socketPool.socketsAdded}
+  - dht_socket_pool_sockets_removed: ${this.socketPool.socketsRemoved}
   - dht_active_queries: ${this.queries.active}
   - dht_total_queries: ${this.queries.total}
   - dht_ping_received: ${this.pingCmds.rx}
@@ -248,6 +265,21 @@ UDX Stats
       help: 'Total number of open holepunches performed by the hyperdht instance',
       collect() {
         this.set(self.punches.open)
+      }
+    })
+    new promClient.Gauge({
+      name: 'dht_holepunch_try_later_total',
+      help: 'Total number of times this node told a peer to try holepunching later (its random-punch limit was reached)',
+      collect() {
+        this.set(self.punches.tryLater)
+      }
+    })
+
+    new promClient.Gauge({
+      name: 'dht_holepunch_try_later_relayed_handshakes_total',
+      help: 'Total handshakes which this node told to try holepunching later at least once, and which could fall back to a relay (counted once per handshake, so lower than dht_holepunch_try_later_total)',
+      collect() {
+        this.set(self.punches.tryLaterRelayedHandshakesAtLeastOnce)
       }
     })
 
@@ -338,6 +370,22 @@ UDX Stats
       help: 'Total retried dht-rpc requests',
       collect() {
         this.set(self.requests.retries)
+      }
+    })
+
+    new promClient.Gauge({
+      name: 'dht_socket_pool_sockets_added',
+      help: 'Total sockets added to the socket pool of the DHT',
+      collect() {
+        this.set(self.socketPool.socketsAdded)
+      }
+    })
+
+    new promClient.Gauge({
+      name: 'dht_socket_pool_sockets_removed',
+      help: 'Total sockets removed from the socket pool of the DHT',
+      collect() {
+        this.set(self.socketPool.socketsRemoved)
       }
     })
 
