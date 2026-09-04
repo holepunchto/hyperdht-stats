@@ -8,12 +8,15 @@ class HyperDhtStats {
   }
 
   get punches() {
-    const punches = this.dht.stats.punches
-    if (!punches.tryLater) punches.tryLater = 0
-    if (!punches.tryLaterRelayedHandshakesAtLeastOnce) {
-      punches.tryLaterRelayedHandshakesAtLeastOnce = 0
-    }
-    return punches
+    return (
+      this.dht.stats.punches || {
+        consistent: 0,
+        random: 0,
+        open: 0,
+        tryLater: 0,
+        tryLaterRelayedHandshakesAtLeastOnce: 0
+      }
+    )
   }
 
   get relaying() {
