@@ -1,10 +1,7 @@
 const test = require('brittle')
 const promClient = require('prom-client')
-const RelayServer = require('blind-relay').Server
 const Hyperdht = require('hyperdht')
 const createTestnet = require('hyperdht/testnet')
-const Nat = require('hyperdht/lib/nat')
-const { FIREWALL } = require('hyperdht/lib/constants')
 const HyperDhtStats = require('.')
 
 const DEBUG = false
