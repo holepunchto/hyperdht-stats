@@ -171,6 +171,60 @@ test('Prometheus metrics', async (t) => {
   }
 })
 
+test('dht_holepunch_try_later_total counts peers we throttled', async (t) => {
+  const testnet = await createTestnet()
+  const bootstrap = testnet.bootstrap
+
+  // A server only answers TRY_LATER when a RANDOM firewall is involved, and
+  // localhost nodes never analyse as RANDOM, so force it for the client alone
+  // (forcing both sides instead makes the client abort on double-random NATs)
+  const updateFirewall = Nat.prototype._updateFirewall
+  let randomNode = null
+  Nat.prototype._updateFirewall = function () {
+    updateFirewall.call(this)
+    if (this.dht === randomNode && this.sampled >= 3) this.firewall = FIREWALL.RANDOM
+  }
+
+  const dht = new Hyperdht({ bootstrap })
+  const client = new Hyperdht({ bootstrap })
+  randomNode = client
+
+  const stats = new HyperDhtStats(dht)
+  stats.registerPrometheusMetrics(promClient)
+
+  t.teardown(async () => {
+    Nat.prototype._updateFirewall = updateFirewall
+    promClient.register.clear()
+    await client.destroy()
+    await dht.destroy()
+    await testnet.destroy()
+  })
+
+  const server = dht.createServer((socket) => socket.on('error', () => {}))
+  await server.listen()
+
+  // The other half of the condition: make the random-punch throttle bite
+  dht._lastRandomPunch = Date.now()
+
+  const socket = client.connect(server.publicKey)
+  socket.on('error', () => {})
+  t.teardown(() => socket.destroy())
+
+  // The client backs off for 10s+ once told to wait, so watch the stat itself
+  const deadline = Date.now() + 20000
+  while (stats.punches.tryLater === 0 && Date.now() < deadline) {
+    await new Promise((resolve) => setTimeout(resolve, 50))
+  }
+
+  const lines = (await promClient.register.metrics()).split('\n')
+  t.ok(getMetricValue(lines, 'dht_holepunch_try_later_total') > 0, 'dht_holepunch_try_later_total')
+  t.is(
+    getMetricValue(lines, 'dht_holepunch_try_later_relayed_handshakes_total'),
+    0,
+    'relayed handshakes not counted, this handshake had no relay to fall back on'
+  )
+})
+
 test('toString', async (t) => {
   const testnet = await createTestnet()
   const bootstrap = testnet.bootstrap
