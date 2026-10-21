@@ -1,5 +1,5 @@
 const test = require('brittle')
-const promClient = require('prom-client')
+const promClient = require('bare-prom-client')
 const Hyperdht = require('hyperdht')
 const createTestnet = require('hyperdht/testnet')
 const HyperDhtStats = require('.')
