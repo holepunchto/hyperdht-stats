@@ -4,7 +4,8 @@
   "description": "HyperDHT stats, with Prometheus support",
   "main": "index.js",
   "scripts": {
-    "test": "prettier --check . && brittle test.js",
+    "test": "lunte && prettier --check . && brittle-node test.js",
+    "test:bare": "brittle-bare test.js",
     "format": "prettier --write ."
   },
   "repository": {
@@ -23,11 +24,12 @@
   },
   "homepage": "https://github.com/holepunchto/hyperdht-stats#readme",
   "devDependencies": {
-    "brittle": "^3.7.0",
+    "bare-prom-client": "^15.1.9",
+    "brittle": "^4.0.0",
     "hyperdht": "^6.34.0",
+    "lunte": "^1.8.6",
     "prettier": "^3.6.2",
-    "prettier-config-holepunch": "^2.0.0",
-    "prom-client": "^15.1.3"
+    "prettier-config-holepunch": "^2.0.0"
   },
   "files": [
     "index.js"
