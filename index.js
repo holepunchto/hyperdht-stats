@@ -113,7 +113,12 @@ class HyperDhtStats {
   }
 
   get udxPacketsDropped() {
-    if (this.dht.udx.packetsDroppedByKernel === null) return null
+    if (
+      this.dht.udx.packetsDroppedByKernel === undefined ||
+      this.dht.udx.packetsDroppedByKernel === null
+    ) {
+      return null
+    }
     if (this.dht.udx.packetsDroppedByKernel >= 2 ** 64) return 0 // not yet initialised (2**64 value normally)
     return this.dht.udx.packetsDroppedByKernel
   }
