@@ -15,7 +15,7 @@ To use with Prometheus:
 ```
 const Hyperdht = require('Hyperdht')
 const DhtStats = require('hyperdht-stats')
-const promClient = require('prom-client')
+const promClient = require('bare-prom-client')
 
 const dht = new Hyperdht()
 const stats = new DhtStats(swarm)
