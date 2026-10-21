@@ -141,7 +141,7 @@ test('Prometheus metrics', async (t) => {
     // The socket pool is only used while holepunching, so the peers
     // connecting to us must be firewalled (the default)
     for (let i = 0; i < nrConnections; i++) {
-      const client = new Hyperdht({ bootstrap })
+      const client = new Hyperdht({ bootstrap, host: '127.0.0.1' })
       clients.push(client)
 
       const socket = client.connect(server.publicKey)
