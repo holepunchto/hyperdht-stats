@@ -11,6 +11,7 @@ test('Prometheus metrics', async (t) => {
   const bootstrap = testnet.bootstrap
 
   const dht = new Hyperdht({ bootstrap, firewalled: false })
+  const natUpdated = new Promise((resolve) => dht.once('nat-update', resolve))
   const stats = new HyperDhtStats(dht)
   stats.registerPrometheusMetrics(promClient)
 
@@ -116,7 +117,7 @@ test('Prometheus metrics', async (t) => {
     )
   }
 
-  await dht.fullyBootstrapped()
+  await Promise.all([natUpdated, dht.fullyBootstrapped()])
 
   {
     const { host, port } = dht.remoteAddress()
